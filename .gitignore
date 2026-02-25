@@ -30,3 +30,6 @@ frontend/dist/
 
 # Backend secrets
 backend/.env
+
+# Google / AI credentials
+backend/app/credentials.json
