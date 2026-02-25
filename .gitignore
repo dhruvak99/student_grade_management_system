@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+.env.*
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Databases
+*.db
+*.sqlite3
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Frontend build
+frontend/dist/
+
+# Backend secrets
+backend/.env
