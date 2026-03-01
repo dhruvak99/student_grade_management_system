@@ -7,24 +7,18 @@ import PerformanceChart from "../components/PerformanceChart";
 import RankingTable from "../components/RankingTable";
 import TopKTable from "../components/TopKTable";
 
-/* 🔤 Subject display names */
-const SUBJECT_LABELS: Record<string, string> = {
-  DSA: "Data Structures and Algorithms",
-  AIML: "Artificial Intelligence and Machine Learning",
-};
-
 const FacultyDashboard = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [chartLabels, setChartLabels] = useState<string[]>([]);
   const [chartScores, setChartScores] = useState<number[]>([]);
-  const [subject, setSubject] = useState<string>("");
+  const [subjectName, setSubjectName] = useState<string>("");
 
   /* 🔄 Trigger refresh after add / update / delete */
   const refreshStudents = () => {
     setRefreshKey((prev) => prev + 1);
   };
 
-  /* 📊 Load chart data */
+  /* 📊 Load chart data (subject-filtered from backend) */
   const loadChartData = async () => {
     try {
       const res = await api.get("/faculty/students");
@@ -35,12 +29,12 @@ const FacultyDashboard = () => {
     }
   };
 
-  /* 🔐 Get logged-in faculty + subject */
+  /* 🔐 Load logged-in faculty subject */
   useEffect(() => {
     api
       .get("/auth/me")
       .then((res) => {
-        setSubject(res.data?.subject || "");
+        setSubjectName(res.data?.subject_name || "");
       })
       .catch((err) => {
         console.error("auth/me failed", err);
@@ -52,11 +46,9 @@ const FacultyDashboard = () => {
     loadChartData();
   }, [refreshKey]);
 
-  const subjectLabel = SUBJECT_LABELS[subject] || subject;
-
   return (
     <div style={{ padding: "24px" }}>
-      {/* Header */}
+      {/* HEADER */}
       <div
         style={{
           display: "flex",
@@ -67,12 +59,12 @@ const FacultyDashboard = () => {
       >
         <h1>
           Faculty Dashboard
-          {subjectLabel ? ` – ${subjectLabel}` : ""}
+          {subjectName ? ` – ${subjectName}` : ""}
         </h1>
         <LogoutButton />
       </div>
 
-      {/* Marks Entry + Performance Chart */}
+      {/* MARKS ENTRY + PERFORMANCE */}
       <div
         style={{
           display: "grid",
@@ -89,35 +81,38 @@ const FacultyDashboard = () => {
         {/* RIGHT */}
         <section className="card">
           <h2>Class Performance</h2>
-          <PerformanceChart labels={chartLabels} scores={chartScores} />
+          <PerformanceChart
+            labels={chartLabels}
+            scores={chartScores}
+          />
         </section>
       </div>
 
-      {/* Students Table */}
+      {/* STUDENTS TABLE */}
       <section className="card">
         <StudentsTable
           refreshKey={refreshKey}
-          onChange={refreshStudents}  
+          onChange={refreshStudents}
         />
       </section>
 
       <hr />
 
-      {/* Ranking */}
+      {/* RANKING */}
       <section className="card">
         <RankingTable refreshKey={refreshKey} />
       </section>
 
       <hr />
 
-      {/* Top-K */}
+      {/* TOP-K */}
       <section className="card">
         <TopKTable />
       </section>
 
       <hr />
 
-      {/* Export */}
+      {/* EXPORT */}
       <section className="card">
         <h2>Export</h2>
         <button>Export to Google Sheets</button>

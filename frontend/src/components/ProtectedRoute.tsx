@@ -6,12 +6,15 @@ export default function ProtectedRoute({
   role,
 }: {
   children: JSX.Element;
-  role: "faculty" | "student";
+  role: "admin" | "faculty" | "student";
 }) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
-  if (!user) return <Navigate to="/login" />;
-  if (user.role !== role) return <Navigate to="/login" />;
+  // ⏳ wait until auth restore completes
+  if (loading) return null;
+
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== role) return <Navigate to="/login" replace />;
 
   return children;
 }

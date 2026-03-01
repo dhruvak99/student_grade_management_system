@@ -9,6 +9,7 @@ from app.auth.jwt import create_access_token
 from app.schemas.auth import UserCreate
 from app.auth.password import hash_password
 from app.auth.dependencies import get_current_user
+from app.models.subject import Subject
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -66,10 +67,24 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
     }
 
 @router.get("/me")
-def read_current_user(current_user=Depends(get_current_user)):
+def read_current_user(
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    subject_code = user.get("subject")
+    subject_name = None
+
+    if subject_code:
+        subject = db.query(Subject).filter(
+            Subject.code == subject_code
+        ).first()
+        if subject:
+            subject_name = subject.name
+
     return {
-        "user_id": current_user["user_id"],
-        "role": current_user["role"],
-        "student_id": current_user.get("student_id"),
-        "subject": current_user.get("subject"),
+        "user_id": user.get("user_id"),
+        "role": user.get("role"),
+        "student_id": user.get("student_id"),
+        "subject_code": subject_code,
+        "subject_name": subject_name
     }

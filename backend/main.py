@@ -4,6 +4,7 @@ from app.models import user, student_record
 from app.routers import auth, faculty, student
 from app.seed import seed_users
 from fastapi.middleware.cors import CORSMiddleware
+from app.routers import admin
 
 app = FastAPI(title="Student Grade Management System")
 app.add_middleware(
@@ -19,6 +20,7 @@ Base.metadata.create_all(bind=engine)
 app.include_router(auth.router)
 app.include_router(faculty.router)
 app.include_router(student.router)
+app.include_router(admin.router)
 
 @app.get("/")
 def root():

@@ -145,27 +145,48 @@ def get_ai_summary(
 
     # 🧠 AI PROMPT (SUBJECT-AWARE)
     prompt = f"""
-You are an academic performance analyst.
+You are an expert academic performance analyst and student mentor.
 
-The student has marks in multiple subjects.
+The student has scores across multiple subjects. Analyze EACH subject independently and then provide an overall assessment.
 
-SUBJECT DATA:
+STUDENT PERFORMANCE DATA:
 {subjects_data}
 
-For EACH subject:
-1. Brief performance summary
-2. One key strength
-3. One improvement area
+For EACH subject, clearly include:
 
-Then provide:
-4. Overall guidance combining all subjects
+Subject Name:
+1. Performance Summary
+   - Briefly describe how the student is performing overall in this subject.
+   - Mention consistency and score trends.
+
+2. Strengths
+   - Identify specific areas where the student is doing well.
+   - Refer to internals or quizzes where relevant.
+
+3. Areas for Improvement
+   - Identify weak or inconsistent areas.
+   - Be constructive and specific.
+
+4. Subject-Specific Suggestions
+   - Give 2 actionable tips to improve performance in this subject.
+
+After analyzing all subjects, provide:
+
+OVERALL PERFORMANCE INSIGHTS:
+- Compare performance across subjects.
+- Identify the strongest subject and the weakest subject.
+- Comment on balance and consistency.
+
+FINAL STUDY STRATEGY:
+- 3 clear, practical recommendations the student should follow
+- Focus on exam preparation, revision strategy, and time management.
 
 Rules:
-- Separate subjects clearly
-- No markdown symbols like ** or ###
+- Plain text only
+- No markdown symbols, headings symbols, or formatting characters
 - No emojis
-- No word count
-- Keep it concise and insightful
+- No word count mention
+- Be professional, detailed, and student-friendly
 """
 
     fallback = (

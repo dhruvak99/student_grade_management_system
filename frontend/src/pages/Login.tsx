@@ -7,7 +7,6 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [shake, setShake] = useState(false);
   const [error, setError] = useState("");
 
   const { login } = useAuth();
@@ -15,36 +14,30 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      const res = await api.post("/auth/login", {
-        username,
-        password,
-      });
-
+      const res = await api.post("/auth/login", { username, password });
       const token = res.data.access_token;
 
-      const me = await api.get("/auth/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await login(token);
 
-      setError(""); // clear error on success
-      login(token, me.data.role);
-      navigate(me.data.role === "faculty" ? "/faculty" : "/student");
+      const me = await api.get("/auth/me");
+
+      if (me.data.role === "admin") navigate("/admin");
+      else if (me.data.role === "faculty") navigate("/faculty");
+      else navigate("/student");
+
+      setError("");
     } catch {
       setUsername("");
       setPassword("");
       setError("Invalid username or password");
-
-      setShake(false);
-      requestAnimationFrame(() => {
-        setShake(true);
-      });
+      // setShake(false);
+      // requestAnimationFrame(() => setShake(true));
     }
   };
 
-  // ⬇️⬇️⬇️ RETURN MUST BE INSIDE THE FUNCTION ⬇️⬇️⬇️
   return (
     <div className="login-page">
-      <div className={`login-card ${shake ? "shake" : ""}`}>
+      <div className="login-card">
         <h1 className="app-title">Student Grade Management System</h1>
         <p className="app-subtitle">Secure Academic Portal</p>
 
