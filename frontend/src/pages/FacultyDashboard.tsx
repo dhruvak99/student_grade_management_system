@@ -110,13 +110,7 @@ const FacultyDashboard = () => {
         <TopKTable />
       </section>
 
-      <hr />
-
-      {/* EXPORT */}
-      <section className="card">
-        <h2>Export</h2>
-        <button>Export to Google Sheets</button>
-      </section>
+      
     </div>
   );
 };

@@ -9,42 +9,52 @@ interface RankInfo {
 interface RankResponse {
   student_id: string;
   ranks: {
-    [subject: string]: RankInfo;
+    [subjectCode: string]: RankInfo;
   };
 }
 
-const SUBJECT_LABELS: Record<string, string> = {
-  DSA: "Data Structures & Algorithms",
-  AIML: "Artificial Intelligence & ML",
-};
-
 const RankBadge = () => {
   const [data, setData] = useState<RankResponse | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get("/student/rank").then((res) => {
-      setData(res.data);
-    });
+    const loadRank = async () => {
+      try {
+        const res = await api.get("/student/rank");
+        setData(res.data);
+      } catch (err) {
+        console.error("Failed to load rank", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRank();
   }, []);
 
-  if (!data) return <p>Loading rank...</p>;
+  if (loading) return <p>Loading rank...</p>;
+  if (!data || !data.ranks || Object.keys(data.ranks).length === 0) {
+    return <p>No rank data available</p>;
+  }
 
   return (
     <div className="rank-box">
       <h3 className="rank-title">Your Rank</h3>
 
-      {Object.entries(data.ranks).map(([subject, info]) => (
-        <div key={subject} className="rank-subject-card">
-          <div className="rank-subject-name">
-            {SUBJECT_LABELS[subject] || subject}
-          </div>
+      <div className="rank-list">
+        {Object.entries(data.ranks).map(([subject, info]) => (
+          <div key={subject} className="rank-subject-card">
+            <div className="rank-subject-name">{subject}</div>
 
-          <div className="rank-main">
-            <span className="rank-number">#{info.rank}</span>
-            <span className="rank-score">{info.final_score} / 60</span>
+            <div className="rank-main">
+              <span className="rank-number">#{info.rank}</span>
+              <span className="rank-score">
+                {info.final_score} / 60
+              </span>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };
